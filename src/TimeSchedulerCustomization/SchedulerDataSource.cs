@@ -53,12 +53,12 @@ namespace TimeSchedulerCustomization
             };
         }
 
-        public override IList<object> LoadResources() => _resources;
+        public override IList<object> LoadResources() => _resources.Cast<object>().ToList();
         public override void LoadContent(TimeSchedulerDataSourceView view)
         {
-            var resources = view.Resources;
+            var resources = view.Resources.Cast<ResourceModel>().ToList();
             var interval = view.Interval;
-            var resourcesHashSet = resources.Cast<ResourceModel>().ToDictionary(x => x.ID);
+            var resourcesHashSet = resources.ToDictionary(x => x.ID);
 
             IList<TaskModel> GetTaskForDate(DateTime date)
             {
@@ -107,10 +107,11 @@ namespace TimeSchedulerCustomization
             // Graphs
             for (var j = 0; j < resources.Count; j++)
             {
-                if (j % 2 == 0)
+                var resource = resources[j];
+                if (resource.ID % 2 == 0)
                     continue;
 
-                var graph = new TimeSchedulerGraph(TimeSchedulerGraphType.StepWithFill, m_colors[j % m_colors.Length], 0, 2);
+                var graph = new TimeSchedulerGraph(TimeSchedulerGraphType.StepWithFill, m_colors[resource.ID % m_colors.Length], 0, 2);
 
                 var lastDate = DateTime.MinValue;
                 graph.AddPoint(lastDate, 0);
